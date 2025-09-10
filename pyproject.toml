@@ -1,0 +1,28 @@
+[project]
+name = "digger"
+version = "0.1.0"
+description = "Tools for working with Seattle Department of Construction and Inspections data."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+  "httpx>=0.28.1",
+  "mcp[cli]>=1.13.1",
+  "openai>=1.107.1",
+  "pydantic>=2.11.7",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["digger"]
+python_files = ["*_test.py", "test_*.py"]
+
+[tool.pyright]
+include = ["digger"]
+exclude = [".venv", ".git", ".github"]
+
+[dependency-groups]
+dev = [
+  "pyright>=1.1.405",
+  "pytest>=8.4.2",
+  "pytest-watch>=4.2.0",
+  "ruff>=0.13.0",
+]
