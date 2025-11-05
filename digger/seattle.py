@@ -1,3 +1,5 @@
+import typing as t
+from time import sleep
 from urllib.parse import urlencode
 
 import httpx
@@ -24,14 +26,63 @@ def get_sea_data_url(dataset_id: str, *, offset: int = 0, limit: int = 1_000) ->
     return f"{base_url}?{query}"
 
 
-def get_sea_data(dataset_id: str, offset: int, limit: int = 1_000) -> list[dict]:
+def _get_sea_data_page(
+    dataset_id: str, *, offset: int = 0, limit: int = 1_000, retries: int = 3
+) -> list[dict]:
+    """
+    Fetch a single page of data from a Seattle Open Data dataset.
+
+    If the request fails, it will be retried up to `retries` times after
+    a short delay.
+    """
     url = get_sea_data_url(dataset_id, offset=offset, limit=limit)
-    response = httpx.get(url)
-    response.raise_for_status()
-    maybe = response.json()
-    # Sanity checks; if this fails we have a bug or the API has changed.
-    if not isinstance(maybe, list):
-        raise ValueError(f"Expected a list, got {type(maybe)}: {maybe}")
-    if not isinstance(maybe[0], dict):
-        raise ValueError(f"Expected a list of dicts, got {type(maybe[0])}: {maybe}")
-    return maybe
+    attempt = retries - 1
+    while attempt >= 0:
+        try:
+            response = httpx.get(url)
+            response.raise_for_status()
+            maybe = response.json()
+            # Sanity checks; if this fails we have a bug or the API has changed.
+            if not isinstance(maybe, list):
+                raise ValueError(f"Expected a list, got {type(maybe)}: {maybe}")
+            if maybe and not isinstance(maybe[0], dict):
+                raise ValueError(
+                    f"Expected a list of dicts, got {type(maybe[0])}: {maybe}"
+                )
+            return maybe
+        except httpx.HTTPError:
+            if attempt == 0:
+                raise
+            sleep(0.5 * 2 ** (attempt - 1))
+        attempt -= 1
+    raise RuntimeError("Unreachable")
+
+
+def get_sea_data(
+    dataset_id: str,
+    *,
+    offset: int = 0,
+    limit: int = 1_000,
+    single: bool = False,
+    retries: int = 3,
+) -> t.Iterable[dict]:
+    """
+    Fetch data from a Seattle Open Data dataset.
+
+    If `single` is True, return only a single page of results as an iterable
+    of dicts. If False, return a generator that yields all results by
+    fetching multiple pages as needed.
+    """
+    current_offset = offset
+    while True:
+        page = list(
+            _get_sea_data_page(
+                dataset_id, offset=current_offset, limit=limit, retries=retries
+            )
+        )
+        if not page:
+            break
+        yield from page
+        if single:
+            break
+        current_offset += limit
