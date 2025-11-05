@@ -1,3 +1,4 @@
+import json
 import typing as t
 
 import click
@@ -29,6 +30,16 @@ def download(dataset: str, format: Format = "jsonl"):
     items = get_sea_data(dataset_id)
     output = t.cast(t.IO[str], click.get_text_stream("stdout"))
     dump_data(items, output, format)
+
+
+@main.command()
+@click.argument("file_path", type=click.Path(exists=True, dir_okay=False))
+def to_csv(file_path: str):
+    """Convert a JSONL file to CSV."""
+    output = t.cast(t.IO[str], click.get_text_stream("stdout"))
+    with open(file_path, "r", encoding="utf-8") as f:
+        as_dicts = (json.loads(line) for line in f)
+        dump_data(as_dicts, output, "csv")
 
 
 if __name__ == "__main__":
