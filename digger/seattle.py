@@ -36,8 +36,8 @@ def _get_sea_data_page(
     a short delay.
     """
     url = get_sea_data_url(dataset_id, offset=offset, limit=limit)
-    attempt = retries - 1
-    while attempt >= 0:
+    attempt = 0
+    while attempt < retries + 1:
         try:
             response = httpx.get(url)
             response.raise_for_status()
@@ -50,11 +50,11 @@ def _get_sea_data_page(
                     f"Expected a list of dicts, got {type(maybe[0])}: {maybe}"
                 )
             return maybe
-        except httpx.HTTPError:
-            if attempt == 0:
+        except httpx.HTTPError, httpx.ConnectError:
+            if attempt == retries:
                 raise
-            sleep(0.5 * 2 ** (attempt - 1))
-        attempt -= 1
+            sleep(0.5 * 2 ** (attempt + 1))
+        attempt += 1
     raise RuntimeError("Unreachable")
 
 
