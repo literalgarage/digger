@@ -9,14 +9,27 @@ SEA_DATA_URL_FMT = "https://data.seattle.gov/resource/{dataset_id}.json"
 
 # A collection of well-known datasets that we've given friendly names to.
 SEA_DATASETS: dict[str, str] = {
-    # Building permits issued by the SDCI
-    "building": "76t5-zqzr",
+    # Building permits
+    # https://data.seattle.gov/Built-Environment/Building-Permits/76t5-zqzr/about_data
+    "building_permits": "76t5-zqzr",
+    # Issued building permits -- not sure I understand the difference
+    # https://data.seattle.gov/Built-Environment/Issued-Building-Permits/8tqq-u7ib/about_data
+    "issued_building_permits": "8tqq-u7ib",
     # Land use applications submitted to the City of Seattle
-    "land_use": "ht3q-kdvx",
+    # https://data.seattle.gov/Built-Environment/Land-Use-Permits/ht3q-kdvx/about_data
+    "land_use_permits": "ht3q-kdvx",
     # Trade permits issued by the SDCI
-    "trade": "c87v-5hwh",
+    # https://data.seattle.gov/Built-Environment/Trade-Permits/c87v-5hwh/about_data
+    "trade_permits": "c87v-5hwh",
     # Electrical permits issued by the SDCI
-    "electrical": "c4tj-daue",
+    # https://data.seattle.gov/Built-Environment/Electrical-Permits/c4tj-daue/about_data
+    "electrical_permits": "c4tj-daue",
+    # Plan reviews conducted by the SDCI
+    # https://data.seattle.gov/Built-Environment/Plan-Review/tqk8-y2z5/about_data
+    "plan_review": "tqk8-y2z5",
+    # Plan comments submitted to the SDCI
+    # https://data.seattle.gov/Built-Environment/Plan-Comments/e285-aq8h/about_data
+    "plan_comments": "e285-aq8h",
 }
 
 
