@@ -26,7 +26,7 @@ SEA_DATASETS: dict[str, str] = {
     "electrical_permits": "c4tj-daue",
     # Plan reviews conducted by the SDCI
     # https://data.seattle.gov/Built-Environment/Plan-Review/tqk8-y2z5/about_data
-    "plan_review": "tqk8-y2z5",
+    "plan_reviews": "tqk8-y2z5",
     # Plan comments submitted to the SDCI
     # https://data.seattle.gov/Built-Environment/Plan-Comments/e285-aq8h/about_data
     "plan_comments": "e285-aq8h",
